@@ -1,0 +1,22 @@
+CREATE DATABASE quiz_game
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+USE quiz_game;
+
+CREATE TABLE question(
+    id BIGINT AUTO_INCREMENT,
+    api_id BIGINT,
+    question VARCHAR(255),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE answer(
+    id BIGINT AUTO_INCREMENT,
+    answer VARCHAR(255),
+    correct BIT(1),
+    question_id BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (question_id)
+                   REFERENCES question(id)
+);
