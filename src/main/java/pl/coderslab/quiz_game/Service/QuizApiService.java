@@ -48,7 +48,7 @@ public class QuizApiService {
 
             if (quizApiQuestionDtos != null && quizApiQuestionDtos.length > 0) {
                 for (QuizApiQuestionDto quizApiQuestionDto : quizApiQuestionDtos) {
-                    System.out.println(quizApiQuestionDto);
+
                     Question question = Question.builder()
                             .api_id(quizApiQuestionDto.getId())
                             .question(quizApiQuestionDto.getQuestion())
@@ -58,11 +58,16 @@ public class QuizApiService {
 
                     for (Map.Entry<String, String> entry : quizApiQuestionDto.getAnswers().entrySet()) {
                         Answer answer = Answer.builder()
+
+
+
                                 .answer(entry.getValue())
-                                .correct(Boolean.parseBoolean(quizApiQuestionDto.getCorrect_answers()
-                                        .get("answer_" + entry.getKey() + "_correct")))
+                                .correct(Boolean.valueOf(quizApiQuestionDto.getCorrect_answers()
+                                        .get(entry.getKey() + "_correct")))
                                 .question(question)
                                 .build();
+
+
 
                         answerService.saveAnswer(answer);
                     }
