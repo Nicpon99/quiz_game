@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.coderslab.quiz_game.Repository.AnswerRepository;
 import pl.coderslab.quiz_game.entity.Answer;
+import pl.coderslab.quiz_game.entity.Question;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -14,5 +17,9 @@ public class AnswerService {
 
     public void saveAnswer(Answer answer){
         answerRepository.save(answer);
+    }
+
+    public List<Answer> findAnswersByQuestion(Question question){
+        return answerRepository.findAnswersByQuestion(question);
     }
 }

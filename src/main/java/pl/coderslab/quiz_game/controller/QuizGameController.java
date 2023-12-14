@@ -1,5 +1,6 @@
 package pl.coderslab.quiz_game.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +19,10 @@ public class QuizGameController {
 
     private final QuestionService questionService;
 
+
     @GetMapping("/question")
-    public Question getQuestion(){
-        return questionService.getRandomQuestion();
+    public String getQuestion() throws JsonProcessingException {
+        return quizApiService.getQuestionWIthAnswers();
     }
 
 

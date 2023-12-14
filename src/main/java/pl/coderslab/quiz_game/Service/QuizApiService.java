@@ -1,5 +1,7 @@
 package pl.coderslab.quiz_game.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -11,9 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import pl.coderslab.quiz_game.API.QuizApiQuestionDto;
 import pl.coderslab.quiz_game.API.QuizApiResponse;
+import pl.coderslab.quiz_game.DTO.AnswerDto;
+import pl.coderslab.quiz_game.DTO.QuestionWithAnswersDto;
 import pl.coderslab.quiz_game.entity.Answer;
 import pl.coderslab.quiz_game.entity.Question;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -58,21 +64,45 @@ public class QuizApiService {
 
                     for (Map.Entry<String, String> entry : quizApiQuestionDto.getAnswers().entrySet()) {
                         Answer answer = Answer.builder()
-
-
-
                                 .answer(entry.getValue())
                                 .correct(Boolean.valueOf(quizApiQuestionDto.getCorrect_answers()
                                         .get(entry.getKey() + "_correct")))
                                 .question(question)
                                 .build();
 
-
-
                         answerService.saveAnswer(answer);
                     }
                 }
             }
         }
+    }
+
+    public String getQuestionWIthAnswers() throws JsonProcessingException {
+        Question question = questionService.getRandomQuestion();
+        List<Answer> answers = answerService.findAnswersByQuestion(question);
+        List<AnswerDto> answerDtoList = new ArrayList<>();
+
+        for (Answer answer : answers) {
+            if (answer.getAnswer() != null) {
+                AnswerDto answerDto = AnswerDto.builder()
+                        .id(answer.getId())
+                        .answer(answer.getAnswer())
+                        .build();
+
+                answerDtoList.add(answerDto);
+            }
+        }
+
+        QuestionWithAnswersDto questionWithAnswersDto = QuestionWithAnswersDto
+                .builder()
+                .id(question.getId())
+                .question(question.getQuestion())
+                .answers(answerDtoList)
+                .build();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        return objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(questionWithAnswersDto);
     }
 }
