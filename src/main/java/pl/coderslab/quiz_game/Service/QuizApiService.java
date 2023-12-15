@@ -14,13 +14,17 @@ import org.springframework.web.client.RestTemplate;
 import pl.coderslab.quiz_game.API.QuizApiQuestionDto;
 import pl.coderslab.quiz_game.API.QuizApiResponse;
 import pl.coderslab.quiz_game.DTO.AnswerDto;
+import pl.coderslab.quiz_game.DTO.AnswerRequestDto;
+import pl.coderslab.quiz_game.DTO.AnswerResponseDto;
 import pl.coderslab.quiz_game.DTO.QuestionWithAnswersDto;
 import pl.coderslab.quiz_game.entity.Answer;
 import pl.coderslab.quiz_game.entity.Question;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -104,5 +108,26 @@ public class QuizApiService {
 
         return objectMapper.writerWithDefaultPrettyPrinter()
                 .writeValueAsString(questionWithAnswersDto);
+    }
+
+    public boolean checkAnswer(Long questionId, List<Long> chosenAnswer){
+        Question question = questionService.findById(questionId);
+        List<Answer> correctAnswers = answerService. findCorrectAnswerByQuestion(question);
+
+        return correctAnswers.stream()
+                .map(Answer::getId)
+                .collect(Collectors.toSet())
+                .equals(new HashSet<>(chosenAnswer));
+    }
+
+    public ResponseEntity<AnswerResponseDto> getResult(AnswerRequestDto answerRequestDto){
+        Long questionId = answerRequestDto.getQuestionId();
+        List<Long> chosenAnswers = answerRequestDto.getAnswers();
+
+        boolean isCorrect = checkAnswer(questionId, chosenAnswers);
+
+        AnswerResponseDto responseDto = new AnswerResponseDto(isCorrect);
+
+        return ResponseEntity.ok(responseDto);
     }
 }

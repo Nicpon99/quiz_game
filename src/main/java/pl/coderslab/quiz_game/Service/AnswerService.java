@@ -22,4 +22,8 @@ public class AnswerService {
     public List<Answer> findAnswersByQuestion(Question question){
         return answerRepository.findAnswersByQuestion(question);
     }
+
+    public List<Answer> findCorrectAnswerByQuestion(Question question){
+        return answerRepository.findCorrectAnswersByQuestion(question);
+    }
 }
