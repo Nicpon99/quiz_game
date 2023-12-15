@@ -26,7 +26,7 @@ public class QuizGameController {
     }
 
     @PostMapping("/answer")
-    public ResponseEntity<AnswerResponseDto> getAnswer(@RequestBody AnswerRequestDto answerRequestDto){
+    public ResponseEntity getAnswer(@RequestBody AnswerRequestDto answerRequestDto){
         return quizApiService.getResult(answerRequestDto);
     }
 }

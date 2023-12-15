@@ -13,10 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import pl.coderslab.quiz_game.API.QuizApiQuestionDto;
 import pl.coderslab.quiz_game.API.QuizApiResponse;
-import pl.coderslab.quiz_game.DTO.AnswerDto;
-import pl.coderslab.quiz_game.DTO.AnswerRequestDto;
-import pl.coderslab.quiz_game.DTO.AnswerResponseDto;
-import pl.coderslab.quiz_game.DTO.QuestionWithAnswersDto;
+import pl.coderslab.quiz_game.DTO.*;
 import pl.coderslab.quiz_game.entity.Answer;
 import pl.coderslab.quiz_game.entity.Question;
 
@@ -120,9 +117,16 @@ public class QuizApiService {
                 .equals(new HashSet<>(chosenAnswer));
     }
 
-    public ResponseEntity<AnswerResponseDto> getResult(AnswerRequestDto answerRequestDto){
+    public ResponseEntity getResult(AnswerRequestDto answerRequestDto){
         Long questionId = answerRequestDto.getQuestionId();
         List<Long> chosenAnswers = answerRequestDto.getAnswers();
+
+        if (questionId == null || chosenAnswers == null){
+            ErrorDto errorDto = new ErrorDto("questionId and answers can not be null!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+        }
+
+        Question question = questionService.findById(questionId);
 
         boolean isCorrect = checkAnswer(questionId, chosenAnswers);
 
